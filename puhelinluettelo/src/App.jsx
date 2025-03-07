@@ -8,22 +8,38 @@ const App = () => {
 
   //new code
   const addPerson = (event) => {
+    
     event.preventDefault()
     const personObject = {
       name: newName,
       id: String(persons.length + 1)
     }
+    
+    /*
+    function checkExist (element) {
+      return element.name === personObject.name
+    }*/
+    //same function above to arrow function
+    const checkExist = (element) => element.name === personObject.name
 
-    setPersons(persons.concat(personObject))
-    setNewName('')
+    //console.log('checkExist', checkExist())    
+
+    if (persons.some(checkExist)) {
+      setNewName('')
+      alert(`${newName} is already added to phonebook`)
+      console.log('on jo lisätty')
+    } else {
+      console.log('ei ole lisätty')
+      
+      setPersons(persons.concat(personObject))
+      setNewName('')
+    }
+
   }
 
   const handleNameChange = (event) => {
     setNewName(event.target.value)
   }
-
-  console.log('newName: ', {newName})
-  console.log('persons: ', {persons})
 
   return (
     <div>
