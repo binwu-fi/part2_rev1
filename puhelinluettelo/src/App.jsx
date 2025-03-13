@@ -1,5 +1,39 @@
 import { useState } from 'react'
 
+const Filter = (props) => {
+  return (
+    <div>
+      filter show with: <input value={props.newSearchName} onChange={props.handleSearchNameChange} />
+    </div>
+  )
+}
+
+const PersonForm = (props) => {
+  return (
+    <form onSubmit={props.addPerson}>
+        <div>
+          name: <input value={props.newName} onChange={props.handleNameChange}/><br></br>
+          number: <input value={props.newNumber} onChange={props.handleNumberChange}/>
+        </div>
+        <div>
+          <button type="submit">add</button>
+        </div>
+      </form>
+  )
+}
+
+const Persons = (props) => {
+  return (
+    <div>
+        {props.persons.map(person=> {
+          if(person.name.toLowerCase().includes(props.newSearchName.toLowerCase())) {
+            return (<div key = {person.name}> {person.name} {person.number}</div>)
+          }
+        })}
+      </div>
+  )
+}
+
 const App = () => {
   const [persons, setPersons] = useState([
     { name: 'Arto Hellas', number: '040-123456' },
@@ -7,11 +41,12 @@ const App = () => {
     { name: 'Dan Abramov', number: '12-43-234345' },
     { name: 'Mary Poppendieck', number: '39-23-6423122' }
   ]) 
+
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [newSearchName, SetNewSearchName] = useState('')
 
-  //new code
+
   const addPerson = (event) => {
     
     event.preventDefault()
@@ -61,27 +96,13 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      filter show with: <input value={newSearchName} onChange={handleSearchNameChange} />
+      <Filter newSearchName={newSearchName} handleSearchNameChange={handleSearchNameChange} />
       <h2>add a new</h2>
-      <form onSubmit={addPerson}>
-        <div>
-          name: <input value={newName} onChange={handleNameChange}/><br></br>
-          number: <input value={newNumber} onChange={handleNumberChange}/>
-        </div>
-        <div>
-          <button type="submit">add</button>
-        </div>
-      </form>
+      <PersonForm addPerson={addPerson} newName={newName} handleNameChange={handleNameChange} 
+      newNumber={newNumber} handleNumberChange={handleNumberChange}/>
       <h2>Numbers</h2>
       <div>debug search name: {newSearchName}</div>
-
-      <div>
-        {persons.map(person=> {
-          if(person.name.toLowerCase().includes(newSearchName.toLowerCase())) {
-            return (<div key = {person.name}> {person.name} {person.number}</div>)
-          }
-        })}
-      </div>
+      <Persons persons={persons} newSearchName={newSearchName}/>
       
     </div>
   )
