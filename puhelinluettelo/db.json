@@ -29,6 +29,11 @@
       "id": "6",
       "name": "Seppo Aatos",
       "number": "09-12345"
+    },
+    {
+      "id": "7",
+      "name": "Matti Mäki",
+      "number": "050-789789"
     }
   ]
 }
