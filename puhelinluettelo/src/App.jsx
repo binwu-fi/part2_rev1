@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react'
-import axios from 'axios'
 import personService from './services/persons'
 
 
@@ -25,74 +24,50 @@ const PersonForm = (props) => {
   )
 }
 
-const Persons = (props) => {
+const Persons = ({persons, newSearchName, removePerson}) => {
   return (
     <div>
-        {props.persons.map(person=> {
-          if(person.name.toLowerCase().includes(props.newSearchName.toLowerCase())) {
-            return (<div key = {person.name}> {person.name} {person.number}</div>)
+        {persons.map(person=> {
+          if(person.name.toLowerCase().includes(newSearchName.toLowerCase())) {
+            return (
+              <div key = {person.id}>
+                {person.name} {person.number}
+                <button name={person.name} id={person.id} onClick={removePerson}>
+                  delete
+              </button>
+            </div>
+            )
           }
+          return null
         })}
       </div>
   )
 }
 
+
 const App = () => {
   const [persons, setPersons] = useState([]) 
-
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [newSearchName, SetNewSearchName] = useState('')
 
-  useEffect(() => {
-    console.log('effect')
-    /*axios
-      .get('http://localhost:3001/persons')
-      .then(response => {
-      console.log('promise fullfilled')
-      setPersons(response.data)
-    })*/
-    personService
-      .getAll()
-      .then(initialPersons => {
-        setPersons(initialPersons)
-      })
-
-  }, [])
-  console.log('render', persons.length, 'persons')
-
   const addPerson = (event) => {
-    
     event.preventDefault()
     const personObject = {
       name: newName,
       number: newNumber,
       id: String(persons.length + 1)
     }
-    
-    /*
-    function checkExist (element) {
-      return element.name === personObject.name
-    }*/
-    //same function above to arrow function
-    const checkExist = (element) => element.name === personObject.name
 
-    //console.log('checkExist', checkExist())    
+    const checkExist = (element) => element.name === personObject.name
 
     if (persons.some(checkExist)) {
       setNewName('')
       alert(`${newName} is already added to phonebook`)
       console.log('on jo lisätty')
     } else {
-      console.log('ei ole lisätty')
-      /*axios
-      .post('http://localhost:3001/persons', personObject)
-      .then(response => {
-        console.log(response)
-        setPersons(persons.concat(response.data))
-        setNewName('')
-        setNewNumber('')
-      })*/
+      console.log('uusi nimi lisätty')
+      
       personService
         .create(personObject)
         .then(returnedPerson => {
@@ -101,6 +76,31 @@ const App = () => {
           setNewNumber('')
         })
         
+    }
+  }
+
+  //2.14
+  const removePersonContactInfo = (event) => {
+    const id = Number(event.target.id);
+    const name = event.target.name;
+    const removeWarningMessage = `Delete ${name}?`;
+    
+    if (window.confirm(removeWarningMessage) === true) {
+      personService
+        .removeId(id)
+        .then(()=> {
+          console.log('Before delete:', persons)
+          console.log('Deleting id:', id)
+          
+          setPersons(persons.filter((person) => person.id !==id))
+          console.log('After delete:', persons)
+
+        })
+        /*.catch((error) => {
+          alert(`The person '${name}' was already deleted from server`)
+          setPersons(persons.filter((person) => person.id !== id))
+        })*/
+      
     }
   }
 
@@ -118,6 +118,17 @@ const App = () => {
 
   
 
+  useEffect(() => {
+    console.log('effect')
+    personService
+      .getAll()
+      .then(initialPersons => {
+        setPersons(initialPersons)
+      })
+    console.log('effect loppu')
+  }, [])
+  //console.log('render', persons.length, 'persons')
+
   return (
     <div>
       <h2>Phonebook</h2>
@@ -127,10 +138,12 @@ const App = () => {
       newNumber={newNumber} handleNumberChange={handleNumberChange}/>
       <h2>Numbers</h2>
       <div>debug search name: {newSearchName}</div>
-      <Persons persons={persons} newSearchName={newSearchName}/>
+      
+      <Persons persons={persons} newSearchName={newSearchName} removePerson={removePersonContactInfo}/>
+
     </div>
   )
-
+//<Persons persons={persons} newSearchName={newSearchName} removePerson={removePersonContactInfo}/>
 }
 
 export default App
