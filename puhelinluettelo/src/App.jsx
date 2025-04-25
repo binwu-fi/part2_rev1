@@ -1,13 +1,17 @@
 import { useState, useEffect } from 'react'
 import personService from './services/persons'
 
-
 const Filter = (props) => {
+  console.log("newSearchName: ", props.newSearchName);
   return (
     <div>
-      filter show with: <input value={props.newSearchName} onChange={props.handleSearchNameChange} />
+      filter shown with:{" "}
+      <input
+        value={props.newSearchName}
+        onChange={props.handleSearchNameChange}
+      />
     </div>
-  )
+  );
 }
 
 const PersonForm = (props) => {
@@ -24,32 +28,41 @@ const PersonForm = (props) => {
   )
 }
 
-const Persons = ({persons, newSearchName, removePerson}) => {
-  return (
-    <div>
-        {persons.map(person=> {
-          if(person.name.toLowerCase().includes(newSearchName.toLowerCase())) {
-            return (
-              <div key = {person.id}>
-                {person.name} {person.number}
-                <button name={person.name} id={person.id} onClick={removePerson}>
-                  delete
-              </button>
-            </div>
-            )
-          }
-          return null
-        })}
-      </div>
-  )
+const Persons = ({ persons, removePersonContactInfo}) => {
+  const personElements = persons.map((element) => {
+    return (
+      <Person
+      key={element.id}
+      person={element}
+      removePersonContactInfo={removePersonContactInfo}
+      />
+    )
+  })
+  return <div>{personElements}</div>
 }
 
+const Person = ({ person, removePersonContactInfo }) => {
+  return (
+    <div>
+      {`${person.name} ${person.number} `} 
+      <button
+        name={person.name}
+        id={person.id}
+        onClick={removePersonContactInfo}
+      >
+        delete
+      </button>
+    </div>
+  )
+}
 
 const App = () => {
   const [persons, setPersons] = useState([]) 
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
-  const [newSearchName, SetNewSearchName] = useState('')
+  const [newSearchName, setNewSearchName] = useState('')
+
+//  const [notificationMessage, setNotificationMessage] = useState(null)
 
   const addPerson = (event) => {
     event.preventDefault()
@@ -75,12 +88,12 @@ const App = () => {
           setNewName('')
           setNewNumber('')
         })
-        
     }
   }
 
   //2.14
   const removePersonContactInfo = (event) => {
+    console.log("do something: ", Number(event.target.id));
     const id = Number(event.target.id);
     const name = event.target.name;
     const removeWarningMessage = `Delete ${name}?`;
@@ -88,19 +101,10 @@ const App = () => {
     if (window.confirm(removeWarningMessage) === true) {
       personService
         .removeId(id)
-        .then(()=> {
-          console.log('Before delete:', persons)
-          console.log('Deleting id:', id)
-          
-          setPersons(persons.filter((person) => person.id !==id))
-          console.log('After delete:', persons)
-
+        .then(() => {
+          //unit.id change to Number(unit.id)
+          setPersons(persons.filter((unit) => Number(unit.id) !== id));
         })
-        /*.catch((error) => {
-          alert(`The person '${name}' was already deleted from server`)
-          setPersons(persons.filter((person) => person.id !== id))
-        })*/
-      
     }
   }
 
@@ -113,10 +117,15 @@ const App = () => {
   }
 
   const handleSearchNameChange = (event) => {
-    SetNewSearchName(event.target.value)
+    setNewSearchName(event.target.value)
   }
 
-  
+
+  const personsToShow =
+    newSearchName.length === 0
+      ? persons
+      : persons.filter((person) => person.name.search(newSearchName) >= 0)
+    
 
   useEffect(() => {
     console.log('effect')
@@ -132,18 +141,29 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <Filter newSearchName={newSearchName} handleSearchNameChange={handleSearchNameChange} />
+      <Filter 
+        newSearchName={newSearchName} 
+        handleSearchNameChange={handleSearchNameChange}
+      />
       <h2>add a new</h2>
-      <PersonForm addPerson={addPerson} newName={newName} handleNameChange={handleNameChange} 
-      newNumber={newNumber} handleNumberChange={handleNumberChange}/>
+      <PersonForm 
+        addPerson={addPerson} 
+        newName={newName} 
+        handleNameChange={handleNameChange} 
+        newNumber={newNumber} 
+        handleNumberChange={handleNumberChange}
+        
+      />
       <h2>Numbers</h2>
       <div>debug search name: {newSearchName}</div>
       
-      <Persons persons={persons} newSearchName={newSearchName} removePerson={removePersonContactInfo}/>
+      <Persons 
+        persons={personsToShow} 
+        removePersonContactInfo={(element) => removePersonContactInfo(element)}
+        
+      />
 
     </div>
-  )
-//<Persons persons={persons} newSearchName={newSearchName} removePerson={removePersonContactInfo}/>
-}
+  )}
 
 export default App
