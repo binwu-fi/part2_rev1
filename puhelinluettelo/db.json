@@ -26,9 +26,14 @@
       "number": "09-123456"
     },
     {
-      "id": "6",
       "name": "Liisa Teikäläinen",
-      "number": "050-987321"
+      "number": "09-123456",
+      "id": "6"
+    },
+    {
+      "name": "Pekka Salo",
+      "number": "09-123123",
+      "id": "7"
     }
   ]
 }

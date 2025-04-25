@@ -62,7 +62,8 @@ const App = () => {
   const [newNumber, setNewNumber] = useState('')
   const [newSearchName, setNewSearchName] = useState('')
 
-//  const [notificationMessage, setNotificationMessage] = useState(null)
+  //const [notificationMessage, setNotificationMessage] = useState(null)
+  //for 2.16
 
   const addPerson = (event) => {
     event.preventDefault()
@@ -73,7 +74,7 @@ const App = () => {
     }
 
     const checkExist = (element) => element.name === personObject.name
-
+    /* removed for 2.15
     if (persons.some(checkExist)) {
       setNewName('')
       alert(`${newName} is already added to phonebook`)
@@ -89,9 +90,54 @@ const App = () => {
           setNewNumber('')
         })
     }
+    */
+    //new code for 2.15
+    const existMessage = `${newName} is already added to phonebook, replace the old number with a new one?`
+    const existPerson = persons.find((element) => element.name === newName)
+
+    if (persons.some(checkExist)) {
+      //window.alert(`${newName} is already added to phonebook`);
+      //above code removed for 2.15
+      if (window.confirm(existMessage) === true) {
+        personService
+          .update(existPerson.id, personObject)
+          .then((returnedPerson) => {
+            //below code for 2.16
+            /*setNotificationMessage({
+              text: `${returnedPerson.name} information is updated !`,
+              type: "notification",
+            });
+            setTimeout(() => {
+              setNotificationMessage(null);
+            }, 5000);*/
+
+            setPersons(
+              persons.map((unit) =>
+                unit.id !== existPerson.id ? unit : returnedPerson
+              )
+            );
+            setNewName("");
+            setNewNumber("");
+          });
+      }
+      setNewName("");
+      setNewNumber("");
+    } else {
+      personService.create(personObject).then((returnedPerson) => {
+        setNotificationMessage({
+          text: `${returnedPerson.name} information added !`,
+          type: "notification",
+        });
+        setTimeout(() => {
+          setNotificationMessage(null);
+        }, 5000);
+        setPersons(persons.concat(returnedPerson));
+        setNewName("");
+        setNewNumber("");
+      });
+    }
   }
 
-  //2.14
   const removePersonContactInfo = (event) => {
     console.log("do something: ", Number(event.target.id));
     const id = Number(event.target.id);
