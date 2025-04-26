@@ -62,8 +62,20 @@ const App = () => {
   const [newNumber, setNewNumber] = useState('')
   const [newSearchName, setNewSearchName] = useState('')
 
-  //const [notificationMessage, setNotificationMessage] = useState(null)
   //for 2.16
+  const [notificationMessage, setNotificationMessage] = useState(null)
+  
+  const Notification = ({message}) => {
+    if (message === null) {
+      return null
+    }
+    
+    return (
+      <div className={message.type === "error" ? "error" : "notification"}>
+        {message.text}
+      </div>
+    )
+  }
 
   const addPerson = (event) => {
     event.preventDefault()
@@ -76,24 +88,22 @@ const App = () => {
     const checkExist = (element) => element.name === personObject.name
     
     //new code for 2.15
-    const existMessage = `${newName} is already added to phonebook, replace the old number with a new one?`
+    //const existMessage = `${newName} is already added to phonebook, replace the old number with a new one?`
     const existPerson = persons.find((element) => element.name === newName)
 
     if (persons.some(checkExist)) {
-      //window.alert(`${newName} is already added to phonebook`);
-      //above code removed for 2.15
       if (window.confirm(existMessage) === true) {
         personService
           .update(existPerson.id, personObject)
           .then((returnedPerson) => {
             //below code for 2.16
-            /*setNotificationMessage({
+            setNotificationMessage({
               text: `${returnedPerson.name} information is updated !`,
               type: "notification",
             });
             setTimeout(() => {
               setNotificationMessage(null);
-            }, 5000);*/
+            }, 5000);
 
             setPersons(
               persons.map((unit) =>
@@ -171,6 +181,9 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      {notificationMessage !== null ? (
+        <Notification message={notificationMessage} />
+      ) : null}
       <Filter 
         newSearchName={newSearchName} 
         handleSearchNameChange={handleSearchNameChange}
