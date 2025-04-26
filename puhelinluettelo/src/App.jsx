@@ -74,23 +74,7 @@ const App = () => {
     }
 
     const checkExist = (element) => element.name === personObject.name
-    /* removed for 2.15
-    if (persons.some(checkExist)) {
-      setNewName('')
-      alert(`${newName} is already added to phonebook`)
-      console.log('on jo lisätty')
-    } else {
-      console.log('uusi nimi lisätty')
-      
-      personService
-        .create(personObject)
-        .then(returnedPerson => {
-          setPersons(persons.concat(returnedPerson))
-          setNewName('')
-          setNewNumber('')
-        })
-    }
-    */
+    
     //new code for 2.15
     const existMessage = `${newName} is already added to phonebook, replace the old number with a new one?`
     const existPerson = persons.find((element) => element.name === newName)
