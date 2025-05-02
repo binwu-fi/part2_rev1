@@ -87,8 +87,7 @@ const App = () => {
 
     const checkExist = (element) => element.name === personObject.name
     
-    //new code for 2.15
-    //const existMessage = `${newName} is already added to phonebook, replace the old number with a new one?`
+    const existMessage = `${newName} is already added to phonebook, replace the old number with a new one?`
     const existPerson = persons.find((element) => element.name === newName)
 
     if (persons.some(checkExist)) {

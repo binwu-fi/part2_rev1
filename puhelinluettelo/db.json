@@ -37,8 +37,18 @@
     },
     {
       "name": "Ari Tommila",
-      "number": "09-123456",
+      "number": "0400-789652",
       "id": "8"
+    },
+    {
+      "id": "9",
+      "name": "Seppo Kivioja",
+      "number": "09-6532987"
+    },
+    {
+      "id": "10",
+      "name": "Ari Vatanen",
+      "number": "09-78963214"
     }
   ]
 }
