@@ -141,7 +141,25 @@ const App = () => {
       personService
         .removeId(id)
         .then(() => {
+          setNotificationMessage({
+            text: `${name} information deleted!`,
+            type: "notification",
+          })
+          setTimeout(() => {
+          setNotificationMessage(null);
+          }, 5000);
           //unit.id change to Number(unit.id)
+          setPersons(persons.filter((unit) => Number(unit.id) !== id));
+        })
+        //2.17 code below
+        .catch((error) => {
+          setNotificationMessage({
+            text: `Information of ${name} has alredy been removed from server !`,
+            type: "error",
+          })
+          setTimeout(() => {
+            setNotificationMessage(null);
+          }, 5000);
           setPersons(persons.filter((unit) => Number(unit.id) !== id));
         })
     }
